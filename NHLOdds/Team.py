@@ -77,47 +77,34 @@ class Standings:
 
 
 class EloCalculator:
-    def calculateElo(team1, team2, result):
+      def calculateElo(eloteam1, eloteam2, result):
+        list = []
         #if result = 0, Team1 wins
         #if result = 1, Team2 wins
         #if result = 2, Team1 overtime loss
         #if result = 3, Team2 overtime loss
-        transformation1 = pow(10, team1.ELO/400)
-        transformation2 = pow(10, team2.ELO/400)
+        transformation1 = pow(10, eloteam1/400)
+        transformation2 = pow(10, eloteam2/400)
         expectedscore = transformation1/(transformation1 + transformation2)
         if(result == 1):
             adjustment = 1
-            team1.win += 1
-            team1.gamesplayed += 1
-            team2.gamesplayed += 1
-            team2.loss += 1
-            team1.ELO += kFactor * (adjustment - expectedscore)
-            team2.ELO -= kFactor * (adjustment - expectedscore)
+            eloteam1 += kFactor * (adjustment - expectedscore)
+            eloteam2 -= kFactor * (adjustment - expectedscore)
         elif(result == 0):
             adjustment = 0
-            team1.loss += 1
-            team1.gamesplayed += 1
-            team2.gamesplayed += 1
-            team2.win += 1
-            team1.ELO -= kFactor * (adjustment - expectedscore)
-            team2.ELO += kFactor * (adjustment - expectedscore)
+            eloteam1 -= kFactor * (adjustment - expectedscore)
+            eloteam2 += kFactor * (adjustment - expectedscore)
         elif(result ==2):
-            team1.otl += 1
-            team1.gamesplayed += 1
-            team2.gamesplayed += 1
-            team2.win +=1
-            team1.ELO -= kFactor * (.5 - expectedscore)
-            team2.ELO += kFactor * (1 - expectedscore)
+            eloteam1 -= kFactor * (.5 - expectedscore)
+            eloteam2 += kFactor * (1 - expectedscore)
         else:
-            team2.otl += 1
-            team1.gamesplayed += 1
-            team2.gamesplayed += 1
-            team1.win +=1
-            team1.ELO += kFactor * (.5 - expectedscore)
-            team2.ELO -= kFactor * (1 - expectedscore)
-
-    def winPercentageBetween(team1, team2):
-        winpercentage = team1.ELO / (team1.ELO + team2.ELO)
+            eloteam1 += kFactor * (.5 - expectedscore)
+            eloteam2 -= kFactor * (1 - expectedscore)
+        list.append(eloteam1)
+        list.append(eloteam2)
+        return list
+    def winPercentageBetween(team1elo, team2elo):
+        winpercentage = team1elo / (team1elo + team2elo)
         return winpercentage
 
 class Team:

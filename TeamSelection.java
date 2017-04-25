@@ -9,11 +9,14 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
+import android.widget.Toast;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class TeamSelection extends ActionBarActivity implements Database.AsyncResponse {
     public String team, games_played, wins, losses, rank, points, streak;
-    //public String[] teams = getResources().getStringArray(R.array.teams);
-    //public String[] team_abbreviations = getResources().getStringArray(R.array.teams);
+    public List<String> teams, team_abbreviations;
     private String games_played_query, wins_query, losses_query, overtime_losses_query, rank_query, points_query, streak_query;
 
     public void ExecuteQueries() {
@@ -28,8 +31,13 @@ public class TeamSelection extends ActionBarActivity implements Database.AsyncRe
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_team_selection);
+
+
+        final List<String> teams = Arrays.asList(getResources().getStringArray(R.array.teams));
+        final List<String> abbreviations = Arrays.asList(getResources().getStringArray(R.array.abbreviations));
 
         final Button start_button = (Button)findViewById(R.id.start_button);
         start_button.setVisibility(View.INVISIBLE);
@@ -44,32 +52,19 @@ public class TeamSelection extends ActionBarActivity implements Database.AsyncRe
         team_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                start_button.setVisibility(View.INVISIBLE);
                 progress_bar.setVisibility(View.VISIBLE);
                 team = parent.getItemAtPosition(position).toString();
 
-                switch (parent.getItemAtPosition(position).toString()) {
-                    case "Anaheim Ducks":
-                        games_played_query = ";current_standings;games_played;name_abbreviation='ANA'";
-                        wins_query = ";current_standings;wins;name_abbreviation='ANA'";
-                        losses_query = ";current_standings;losses;name_abbreviation='ANA'";
-                        overtime_losses_query = ";current_standings;overtime;name_abbreviation='ANA'";
-                        rank_query = ";current_standings;current_ranking;name_abbreviation='ANA'";
-                        points_query = ";current_standings;points;name_abbreviation='ANA'";
-                        streak_query = ";current_standings;streak;name_abbreviation='ANA'";
-                        ExecuteQueries();
-                    case "Boston Bruins":
-                        games_played = wins = losses = rank = points = streak = "";
-                        games_played_query = ";current_standings;games_played;name_abbreviation='BOS'";
-                        wins_query = ";current_standings;wins;name_abbreviation='BOS'";
-                        losses_query = ";current_standings;losses;name_abbreviation='BOS'";
-                        overtime_losses_query = ";current_standings;overtime;name_abbreviation='BOS'";
-                        rank_query = ";current_standings;current_ranking;name_abbreviation='BOS'";
-                        points_query = ";current_standings;points;name_abbreviation='BOS'";
-                        streak_query = ";current_standings;streak;name_abbreviation='BOS'";
-                        ExecuteQueries();
-                    default:
-                        break;
-                }
+                games_played = wins = losses = rank = points = streak = "";
+                games_played_query = ";current_standings;games_played;name_abbreviation='" + abbreviations.get(teams.indexOf(team)) + "'";
+                wins_query = ";current_standings;wins;name_abbreviation='" + abbreviations.get(teams.indexOf(team)) + "'";
+                losses_query = ";current_standings;losses;name_abbreviation='" + abbreviations.get(teams.indexOf(team)) + "'";
+                overtime_losses_query = ";current_standings;overtime;name_abbreviation='" + abbreviations.get(teams.indexOf(team)) + "'";
+                rank_query = ";current_standings;current_ranking;name_abbreviation='" + abbreviations.get(teams.indexOf(team)) + "'";
+                points_query = ";current_standings;points;name_abbreviation='" + abbreviations.get(teams.indexOf(team)) + "'";
+                streak_query = ";current_standings;streak;name_abbreviation='" + abbreviations.get(teams.indexOf(team)) + "'";
+                ExecuteQueries();
             }
 
             @Override

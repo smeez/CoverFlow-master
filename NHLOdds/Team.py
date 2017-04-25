@@ -7,6 +7,7 @@ from operator import itemgetter
 #how much weight each specific match has. 32 is used in chess
 kFactor = 90
 
+
 class Standings:
     def __init__(self, teams):
         self.teams = teams
@@ -107,6 +108,40 @@ class EloCalculator:
     def winPercentageBetween(team1elo, team2elo):
         winpercentage = team1elo / (team1elo + team2elo)
         return winpercentage
+    def getPlayoffProbability(playoffpoints, playoffgamesplayed, schedule, teampoints, teamgamesplayed, teamelo):
+        #playoff points: 8th highest in the conference of the team
+        #playoff gamesplayed: 8th highest num of gamesplayed
+        #schedule: ***FUTURE*** list of elo values for remaining games in season ex. [1050, 1060, 1007, 1100]
+                #current elo values for the future schedule
+        #points : current points of team
+        #teamgamesplayed: num of games played for team
+        #elo: elo of team
+
+        playoff_pointsneeded = (82-playoffgamesplayed)*(playoffpoints/playoffgamesplayed) + playoffpoints
+        if(82-teamgamesplayed > 0 ):
+            my_ppg = (playoff_pointsneeded-teampoints)/(82-teamgamesplayed)
+        elif(82-teamgamesplayed == 0 and playoffpoints < teampoints):
+            return 1.0
+        else:
+            return 0.0
+        
+        print(playoff_pointsneeded-teampoints)
+        print(82-teamgamesplayed)
+
+        schedule_perc = []
+        for elem in schedule:
+            schedule_perc.append(EloCalculator.winPercentageBetween(teamelo, elem))
+
+        func = PoiBin(schedule_perc)
+
+        print(my_ppg)
+        print(int(len(schedule_perc)*(my_ppg/2)))
+        if(my_ppg < 2):
+            winperc = func.pmf(int(len(schedule_perc)*(my_ppg/2)))
+        else:
+            winperc = 0
+
+        return winperc  
 
 class Team:
     def __init__(self, schedule, gamesplayed, name, division, conference, win, loss, otl, ELO):

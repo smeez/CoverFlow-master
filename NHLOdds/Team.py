@@ -78,6 +78,7 @@ class Standings:
 
 class EloCalculator:
       def calculateElo(eloteam1, eloteam2, result):
+        kFactor = 64
         list = []
         #if result = 0, Team1 wins
         #if result = 1, Team2 wins

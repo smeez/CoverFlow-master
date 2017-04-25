@@ -53,6 +53,28 @@ class Standings:
         print(func.pmf(int(len(schedule)*(ppg_needed/2))))
 
         print("need pts", ppg_needed)
+    def ifWin(self, team1, team2):
+        current_points = team1.win * 2 + team1.otl
+        new_points = current_points+2
+
+        team_competing= self.pointsToMakePlayoffs(team1.conference)
+
+        neededpoints = (team_competing.win * 2 + team_competing.otl)
+
+
+        ppg_top = neededpoints/team_competing.gamesplayed
+        points_end = neededpoints+ppg_top*(82-team_competing.gamesplayed)
+        ppg_needed = (points_end - new_points)/(82-team1.gamesplayed)
+        ppg_prev = (points_end - current_points) / (82 - team1.gamesplayed)
+
+        schedule = team1.schedule
+        schedule_perc = self.getScheduleProbability(team1, schedule)
+
+        print(schedule_perc)
+        func = PoiBin(schedule_perc)
+        print(func.pmf(int(len(schedule)*(ppg_needed/2))))
+        print(func.pmf(int(len(schedule)*(ppg_needed/2) -1 )))
+
 
 class EloCalculator:
     def calculateElo(team1, team2, result):
@@ -84,14 +106,14 @@ class EloCalculator:
             team1.gamesplayed += 1
             team2.gamesplayed += 1
             team2.win +=1
-            team1.ELO -= kFactor * (1 - expectedscore)
+            team1.ELO -= kFactor * (.5 - expectedscore)
             team2.ELO += kFactor * (1 - expectedscore)
         else:
             team2.otl += 1
             team1.gamesplayed += 1
             team2.gamesplayed += 1
             team1.win +=1
-            team1.ELO += kFactor * (1 - expectedscore)
+            team1.ELO += kFactor * (.5 - expectedscore)
             team2.ELO -= kFactor * (1 - expectedscore)
 
     def winPercentageBetween(team1, team2):
@@ -118,6 +140,7 @@ def playGame(team1, team2):
     team1.printElo()
     team2.printElo()
 
+"""
 def main():
     team2 = Team([], 0,"Islanders", "Metro", "East", 0, 0, 0, 1000)
     team3 = Team([], 0,"Blackhawks", "Metro", "West", 0, 0, 0, 1000)
@@ -138,6 +161,9 @@ def main():
     sorted = standing.sortStandings("East")
     print(standing.pointsToMakePlayoffs("East").win)
     standing.getPlayoffProbability(team1)
+
+    print("playoff impact")
+    standing.ifWin(team1, team2)
     #for index in range(gamelength):
     #    print("GAME ", index)
     #    print("win %", teams[0].winPercentageBetween(teams[1]))
@@ -149,3 +175,4 @@ def main():
 
 
 if __name__ == "__main__": main()
+"""
